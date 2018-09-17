@@ -1,0 +1,25 @@
+WebPlan
+
+Create Entity Page
+    Name:
+    Save
+
+
+List Entities screen
+    Shows all entities
+    Their Tag Count
+    Their last known location (name of location entity)
+    Their last time of checkin
+
+    Auto Refresh every 2 seconds
+
+    Add tag:
+        Click Add Tag on an entity
+        -ScanTag, submit
+
+
+Checkin screen
+    Scan location
+    Scan entity
+
+

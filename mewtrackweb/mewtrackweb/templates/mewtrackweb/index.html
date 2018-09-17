@@ -1,0 +1,248 @@
+<html>
+    <head>
+        <style>
+            .inst-readout-half-width {
+                color: black;
+                border-width: 2px;
+                border-style: solid;
+                width: 360px;
+                height: 200px;
+                display: inline-block;
+                height: 200px;
+                margin-bottom: 5px;
+
+            }
+            .inst-readout-hw-text{
+                font-family: "Helvetica";
+                font-size: 180px;
+                line-height: 180px;
+                text-align: left;
+                float: left;
+            }
+            .inst-readout-full-width {
+                color: black;
+                border-width: 3px;
+                border-style: solid;
+                width: 725px;
+                height: 400px;
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+            .inst-readout-fw-text {
+                font-family: "Helvetica";
+                font-size: 260px;
+                float: left;
+                position: relative;
+                text-align: left;
+                height: 260px;
+                width: 500px;
+                left: 10px;
+                top: 95px;
+                line-height: 260px;
+            }
+            .inst-readout-full-width-target {
+                float: right;
+                position: relative;
+                right: 10px;
+                top: -10px;
+                width: 200px;
+                height: 300px;
+            }
+            .inst-readout-fw-target-readout-on-target {
+                font-family: "Helvetica";
+                font-size: 100px;   
+                color: black;
+                border-width: 5px;
+                border-style: solid; 
+                line-height: 100px; 
+                margin-top: 7px;
+                margin-bottom: 7px;
+                height: 100px;
+                text-align: center;
+            }
+            .inst-readout-fw-target-readout-off-target {
+                font-family: "Helvetica";
+                font-size: 100px;   
+                color: black;
+                border-width: 2px;
+                border-style: solid; 
+                line-height: 100px; 
+                margin-top: 10px;
+                margin-bottom: 10px;
+                height: 100px;
+                text-align: center;
+            }
+            .inst-readout-fw-target-up-active {
+                width: 0; 
+                height: 0; 
+                border-left: 100px 
+                    solid transparent; 
+                border-right: 100px 
+                    solid transparent; 
+                border-bottom: 100px 
+                    solid black;  
+                padding-bottom: 10px;          
+            }
+            .inst-readout-fw-target-up-inactive {
+                width: 0; 
+                height: 0; 
+                border-left: 100px 
+                    solid transparent; 
+                border-right: 100px 
+                    solid transparent; 
+                border-bottom: 100px 
+                    solid gray;  
+                padding-bottom: 10px;
+            }
+            .inst-readout-fw-target-down-active {
+                width: 0; 
+                height: 0; 
+                border-left: 100px 
+                    solid transparent; 
+                border-right: 100px 
+                    solid transparent; 
+                border-top: 100px
+                    solid black;
+                padding-top: 10px;
+            }
+            .inst-readout-fw-target-down-inactive {
+                width: 0; 
+                height: 0; 
+                border-left: 100px 
+                    solid transparent; 
+                border-right: 100px 
+                    solid transparent; 
+                border-top: 100px 
+                    solid gray;  
+                padding-top: 10px;
+            }
+            .inst-title-full-width {
+                float: left;
+                position: relative;
+                left: 5px;
+                font-size: 60px;
+                font-family: "Helvetica";
+            }
+            .inst-title-half-width {
+                position: relative;
+                left: 5px;
+                top: 1px;
+                font-size: 30px;
+                font-family: "Helvetica";
+            }
+            .menu {
+                margin-left: 240px;
+                margin-right: auto;
+                
+            }
+            .circle-unselect { 
+                display: inline-block; 
+                width: 50px; 
+                height: 50px; 
+                background: gray; 
+                -moz-border-radius: 25px; 
+                -webkit-border-radius: 25px; 
+                border-radius: 25px; 
+            }
+            .circle-select { 
+                display: inline-block; 
+                width: 50px; 
+                height: 50px; 
+                background: black; 
+                -moz-border-radius: 25px; 
+                -webkit-border-radius: 25px; 
+                border-radius: 25px; 
+            }
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <script>
+            var runLoop  = setInterval(loadInstrumentData, 1500);
+
+            function setTarget(currentValue, targetValue, instrument, decimalPrecision) {
+
+                if (currentValue.toFixed(decimalPrecision) === targetValue.toFixed(decimalPrecision)) {
+                    $(instrument + " #up-arrow").attr("class","inst-readout-fw-target-up-active");
+                    $(instrument + " #down-arrow").attr("class","inst-readout-fw-target-down-active");
+                    $(instrument + " #delta-reading").attr("class","inst-readout-fw-target-readout-on-target");
+                    $(instrument + " #delta-reading").html("0.0");                   
+                }
+                else if(currentValue > targetValue){
+                    $(instrument + " #up-arrow").attr("class","inst-readout-fw-target-up-inactive");
+                    $(instrument + " #down-arrow").attr("class","inst-readout-fw-target-down-active");
+                    $(instrument + " #delta-reading").attr("class","inst-readout-fw-target-readout-off-target");
+                    $(instrument + " #delta-reading").html((currentValue - targetValue).toFixed(decimalPrecision));
+                }
+                else if(currentValue < targetValue) {
+                    $(instrument + " #up-arrow").attr("class","inst-readout-fw-target-up-active");
+                    $(instrument + " #down-arrow").attr("class","inst-readout-fw-target-down-inactive");
+                    $(instrument + " #delta-reading").attr("class","inst-readout-fw-target-readout-off-target");
+                    $(instrument + " #delta-reading").html((currentValue - targetValue).toFixed(decimalPrecision));   
+                }   
+            };
+
+            function loadInstrumentData(){
+                $.getJSON("./data_wind/", function(data) {
+                    var windAngleReading = data.windAngle;
+                    $("#bottom-inst-readout").html(windAngleReading.toFixed(0));
+                    setTarget(windAngleReading, data.windTargetAngle, "#bottom-inst", 0);
+                });
+                $.getJSON("./data_boat/", function(data) {
+                    var boatSOWReading = data.boatSOW;
+                    $("#top-inst-readout").html(boatSOWReading.toFixed(1));
+                    setTarget(boatSOWReading, data.boatTargetSpeed, "#top-inst", 1);
+                    $("#top-left-inst").html(data.boatSOW.toFixed(1));
+                    $("#top-right-inst").html(data.boatHeading.toFixed(0));
+                    $("#bottom-left-inst").html(data.boatSOG.toFixed(1));
+                    $("#bottom-right-inst").html(data.boatCOG.toFixed(0));
+                });
+            };
+        </script>
+    </head>
+    <body>
+        <div class='menu'>
+            <div class='circle-select'></div>
+            <div class='circle-select'></div>
+            <div class='circle-select'></div>
+            <div class='circle-select'></div>
+        </div>
+        <div>
+            <div class='inst-title-full-width'>Boat Speed</div>
+            <div id='top-inst' class='inst-readout-full-width'>
+                <div id='top-inst-readout' class='inst-readout-fw-text'>180</div>
+                <div class='inst-readout-full-width-target'>
+                    <div id='up-arrow' class='inst-readout-fw-target-up-inactive'></div>
+                    <div id='delta-reading' class='inst-readout-fw-target-readout-on-target'>-2.3</div>
+                    <div id='down-arrow' class='inst-readout-fw-target-down-inactive'></div>
+                </div>
+            </div>
+            <div class='inst-title-full-width'>Wind Angle</div>
+            <div id='bottom-inst' class='inst-readout-full-width'>
+                <div id='bottom-inst-readout' class='inst-readout-fw-text'>000</div>
+                <div class='inst-readout-full-width-target'>
+                    <div id='up-arrow' class='inst-readout-fw-target-up-inactive'></div>
+                    <div id='delta-reading' class='inst-readout-fw-target-readout-on-target'>-2.3</div>
+                    <div id='down-arrow' class='inst-readout-fw-target-down-inactive'></div>
+                </div>
+            </div>
+        </div>
+        <div class='four-inst'>
+            <div class='inst-readout-half-width'>
+                <div class='inst-title-half-width'>SOW</div>
+                <div id='top-left-inst' class='inst-readout-hw-text'>000</div>               
+            </div>
+            <div class='inst-readout-half-width'>
+                <div class='inst-title-half-width'>Heading</div>
+                <div id='top-right-inst' class='inst-readout-hw-text'>000</div>               
+            </div>
+            <div></div>
+            <div class='inst-readout-half-width'>
+                <div class='inst-title-half-width'>SOG</div>
+                <div id='bottom-left-inst' class='inst-readout-hw-text'>000</div>               
+            </div>
+            <div class='inst-readout-half-width'>
+                <div class='inst-title-half-width'>COG</div>
+                <div id='bottom-right-inst' class='inst-readout-hw-text'>000</div>               
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,139 @@
+<html>
+    <head>
+        <style>
+            .inst-readout {
+                color: black;
+                border-width: 3px;
+                border-style: solid;
+                width: 725px;
+                height: 400px;
+                margin-top: 5px;
+                margin-bottom: 5px;
+                position: relative;
+            }
+            .inst-readout-text {
+                font-family: "Helvetica";
+                font-size: 230px;
+                position: relative;
+                float: left;
+                text-align: left;
+                height: 260px;
+                width: 500px;
+                left: 10px;
+                top: 70px;
+                line-height: 260px;
+                white-space: nowrap;
+            }
+            .inst-readout-title {
+                float: left;
+                width: 550px;
+                position: relative;
+                left: 5px;
+                font-size: 60px;
+                font-family: "Helvetica";
+            }
+            .inst-main-menu-title {
+                float: none;
+                width: 724px;
+                position: absolute;
+                left: 640px;
+                top: 25px;
+                font-size: 30px;
+                font-family: "Helvetica";
+                color: lightgrey;
+                z-index: 10;
+            }
+            .inst-main-menu {
+                float: none;
+                width: 230px;
+                position: absolute;
+                left: 487px;
+                top: 75px;
+                font-size: 30px;
+                font-family: "Helvetica";
+                color: black;
+                background-color: white;
+                border: 2px solid black;
+                visibility: hidden;
+                z-index: 10;
+            }
+            .inst-menu {
+                float: left;
+                position: absolute;
+                z-index: 10;
+                display: none;
+                font-size: 38px;
+                font-family: helvetica;
+                background-color: white;
+                border: 4px;
+                width: 375px;
+                left: 43px;
+                top: 80px;
+            }
+        </style>
+        <script src="./jquery"></script>
+        <script src="./view_controllers"></script>
+        <script>
+            //Hacked to work around the DOM load delays. Got a chicken and egg
+
+            var topInstController = null;
+            var bottomInstController = null;
+            var runLoop  = setInterval(loadInstrumentData, 500);
+
+            function initializeController(){
+
+                topInstController = new instrumentController(
+                        document.getElementById("inst-title"), 
+                        document.getElementById("inst-text"), 
+                        document.createElement("div"), 
+                        document.getElementById("inst_menu"));
+                bottomInstController = new instrumentController(
+                        document.getElementById("inst-title2"), 
+                        document.getElementById("inst-text2"), 
+                        document.createElement("div"), 
+                        document.getElementById("inst_menu2"));
+                topInstController.selectMetric("SOW");
+                bottomInstController.selectMetric("SOW");
+
+            }
+
+
+            function loadInstrumentData(){
+                $.getJSON("./data_all/", function(data) {
+                    if (topInstController == null || bottomInstController == null)
+                        initializeController();
+                    topInstController.updateMetricData(data);
+                    bottomInstController.updateMetricData(data);
+                });
+
+            };
+
+            function setTimer(minutes) {
+                $.getJSON("./set_timetostart?mins=" + minutes, function(data) {});
+                document.getElementById("main_menu").style.visibility = "hidden";
+
+            }
+
+        </script>
+    </head>
+    <body>
+        <div class='inst-main-menu-title' onclick='document.getElementById("main_menu").style.visibility = "visible";'>Menu</div>
+        <div id='main_menu' class='inst-main-menu'>
+            <div onclick='setTimer(3);'><p>Set 3 Min Timer</div>
+            <div onclick='setTimer(4);'><p>Set 4 Min Timer</div>
+            <div onclick='setTimer(5);'><p>Set 5 Min Timer</div>
+            <div onclick='setTimer(10);'><p>Set 10 Min Timer</div>
+            <div onclick='setTimer(15);'><p>Set 15 Min Timer</div>
+        </div>
+        <div id='top-inst' class='inst-readout'>
+            <div id='inst_menu' class="inst-menu"></div>
+            <div id='inst-title' class='inst-readout-title'>-</div>
+            <div id='inst-text' class='inst-readout-text'>-</div>
+        </div>
+        <div id='top-inst2' class='inst-readout'>
+            <div id='inst_menu2' class="inst-menu"></div>
+            <div id='inst-title2' class='inst-readout-title'>-</div>
+            <div id='inst-text2' class='inst-readout-text'>-</div>
+        </div>
+    </body>
+</html>

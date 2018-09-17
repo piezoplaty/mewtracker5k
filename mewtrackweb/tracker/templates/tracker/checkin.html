@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <!-- 
+            [{"tagCount": 0, "name": "Sprocket", "uuid": "00e53a63-2780-4490-901e-efb5e66d3f36"}, {"tagCount": 0, "name": "Maori", "uuid": "c7951337-6a63-4e4a-9bdf-932d9ad80566"}]
+        -->
+        <style>
+        </style>
+        <script src="/jquery"></script>
+        <script src="/view_controllers"></script>
+        <script>
+
+            function ScanLocation(){
+
+                locationTagValue = $("#locationTagField").val();
+                $.getJSON("./get_entity_by_tag?tagValue=" + locationTagValue, function(data) {
+                    $("#locationName").text(data.name);
+                });
+                $("#itemTagField")[0].focus();
+
+            }
+
+            function ScanItem(){
+                locationTagValue = $("#locationTagField").val();
+                entityTagValue = $("#itemTagField").val();
+
+                $.getJSON("./set_entity_location?locationTag=" + locationTagValue + "&entityTag=" + entityTagValue, function(data) {
+                    locationEntity = data;
+                });
+
+
+                $("#locationTagField").val("");
+                $("#itemTagField").val("");
+                $("#locationTagField")[0].focus();
+            }
+
+
+
+        </script>
+    </head>
+    <body>
+        <div class="checkInItem">
+            <span>Scan the Location:</span>
+            <input id="locationTagField" type="text" name="locationTag" autofocus="true">
+            <input type="submit" name="submit" onclick="ScanLocation()">
+            <span id="locationName"></span><br>
+            <span>Scan the Item to Checkin:</span>
+            <input id="itemTagField" type="text" name="itemTag">
+            <input type="submit" name="submit" onclick="ScanItem()">            
+        </div>
+
+        </div>
+    </body>
+</html>
